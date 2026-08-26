@@ -1,0 +1,27 @@
+---
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:v1.72.0
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./homarr/appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
+    labels:
+      - traefik.docker.network=proxy
+      - traefik.enable=true
+      - traefik.http.routers.homarr.rule=Host(`home.pi.djan.org`)
+      - traefik.http.routers.homarr.entrypoints=websecure
+      - traefik.http.routers.homarr.tls.certresolver=gandi
+      - traefik.http.services.homarr.loadbalancer.server.port=7575
+    networks:
+      - default
+      - proxy
+    extra_hosts:
+      - "traefik.pi.djan.org:host-gateway"
+
+networks:
+  proxy:
+    external: true

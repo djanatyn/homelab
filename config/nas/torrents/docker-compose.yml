@@ -1,0 +1,45 @@
+---
+version: "3"
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=mullvad
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_ADDRESSES=10.70.126.176/32
+      - SERVER_CITIES=Seattle WA
+      - DNS_REBINDING_PROTECTION_EXEMPT_HOSTNAMES=*.relays.mullvad.net
+    ports:
+      - "8080:8080" # qBittorrent Web UI
+      - "9117:9117" # jackett
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1026
+      - PGID=100
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+    volumes:
+      - ./qbittorrent/config:/config
+      - /volume1/media:/media
+      - /volume1/music:/music
+    restart: unless-stopped
+    network_mode: "service:gluetun"
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - AUTO_UPDATE=true #optional
+    volumes:
+      - ./jackett/data:/config
+    restart: unless-stopped
+    network_mode: "service:gluetun"

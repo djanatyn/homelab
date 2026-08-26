@@ -1,0 +1,64 @@
+---
+version: 0.17-0
+
+mqtt:
+  enabled: false
+
+detectors:
+  cpu:
+    type: cpu
+
+record:
+  enabled: true
+  continuous:
+    days: 3
+
+snapshots:
+  enabled: false
+
+ffmpeg:
+  hwaccel_args: preset-vaapi
+  input_args: preset-rtsp-restream
+
+detect:
+  enabled: false
+  fps: 2
+  width: 640
+  height: 360
+
+go2rtc:
+  streams:
+    camera_01_main:
+      - rtsp://synology:{FRIGATE_CAMERA_01_PASSWORD}@192.168.40.223:554/Streaming/Channels/101
+    camera_01_sub:
+      - rtsp://synology:{FRIGATE_CAMERA_01_PASSWORD}@192.168.40.223:554/Streaming/Channels/102
+    camera_02_main:
+      - rtsp://synology:{FRIGATE_CAMERA_02_PASSWORD}@192.168.40.201:554/Streaming/Channels/101
+    camera_02_sub:
+      - rtsp://synology:{FRIGATE_CAMERA_02_PASSWORD}@192.168.40.201:554/Streaming/Channels/102
+
+cameras:
+  camera_01:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/camera_01_main
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/camera_01_sub
+          roles:
+            - detect
+    detect:
+      enabled: false
+
+  camera_02:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/camera_02_main
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/camera_02_sub
+          roles:
+            - detect
+    detect:
+      enabled: false
+

@@ -1,0 +1,29 @@
+HomelabConfig(
+    targets: [
+        DeployTargetConfig(
+            service: Paperless,
+            host: Pi,
+            deploy_root: "/homelab/paperless",
+            files: [
+                Directory(
+                    deploy_path: "./consume",
+                    mode: 0o700,
+                    owner: 1026,
+                    group: 100
+                ),
+                ConfigFile(
+                    repo_path: "./pi/miniflux/docker-compose.yml",
+                    artifact_path: "./docker-compose.yml",
+                    deploy_path: "./docker-compose.yml",
+                    mode: 0o600,
+                    owner: 1000,
+                    group: 100,
+                )
+            ],
+            preconditions: [
+                Mountpoint("/docker-usb"),
+                DockerNetwork("proxy"),
+            ]
+        ),
+    ]
+)
