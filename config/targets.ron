@@ -12,7 +12,7 @@ HomelabConfig(
                     group: 100
                 ),
                 ConfigFile(
-                    repo_path: "./pi/miniflux/docker-compose.yml",
+                    repo_path: "./config/pi/miniflux/docker-compose.yml",
                     artifact_path: "./docker-compose.yml",
                     deploy_path: "./docker-compose.yml",
                     mode: 0o600,
