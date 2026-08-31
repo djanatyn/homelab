@@ -171,6 +171,7 @@ mod manifest {
     use std::path::{Component, Path, PathBuf};
 
     use nix::fcntl::{openat, renameat, OFlag, AT_FDCWD};
+    use nix::libc;
     use nix::sys::stat::{mkdirat, Mode};
     use nix::unistd::{chown, fchown, write, Gid, Uid};
     use serde::{Deserialize, Serialize};
@@ -218,7 +219,7 @@ mod manifest {
                 ManifestArtifact::Directory { mode, .. } => *mode,
             };
 
-            Mode::from_bits(mode).ok_or(anyhow::anyhow!("invalid mode"))
+            Mode::from_bits(mode as libc::mode_t).ok_or(anyhow::anyhow!("invalid mode"))
         }
 
         /// Deploy artifact to local host.
